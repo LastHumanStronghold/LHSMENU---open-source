@@ -33,7 +33,8 @@ jobs:
           import java.util.function.Consumer;
           public class Button { public static Builder builder(Component c, Consumer<Button> a){return new Builder();} public static class Builder { public Builder bounds(int x,int y,int w,int h){return this;} public Button build(){return new Button();} } }
           EOF
-          echo 'package net.minecraft.network.chat; public interface Component { static Component m_237115_(String s){return null;} }' > quickskin/stubs/net/minecraft/network/chat/Component.java
+          echo 'package net.minecraft.network.chat; public interface Component { static MutableComponent m_237115_(String s){return null;} }' > quickskin/stubs/net/minecraft/network/chat/Component.java
+          echo 'package net.minecraft.network.chat; public class MutableComponent implements Component {}' > quickskin/stubs/net/minecraft/network/chat/MutableComponent.java
           echo 'package net.minecraftforge.api.distmarker; public enum Dist { CLIENT, DEDICATED_SERVER }' > quickskin/stubs/net/minecraftforge/api/distmarker/Dist.java
           echo 'package net.minecraftforge.eventbus.api; import java.lang.annotation.*; @Retention(RetentionPolicy.RUNTIME) @Target(ElementType.METHOD) public @interface SubscribeEvent {}' > quickskin/stubs/net/minecraftforge/eventbus/api/SubscribeEvent.java
           cat > quickskin/stubs/net/minecraftforge/fml/common/Mod.java <<'EOF'
