@@ -1,0 +1,134 @@
+name: Build LHSMENU with Quick Skin
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "quickskin/**"
+      - ".github/workflows/build-quickskin.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Create compile-time API stubs
+        shell: bash
+        run: |
+          mkdir -p quickskin/stubs/com/mainlhs/client/screen
+          mkdir -p quickskin/stubs/net/minecraft/client/gui/components
+          mkdir -p quickskin/stubs/net/minecraft/client/gui/screens
+          mkdir -p quickskin/stubs/net/minecraft/client
+          mkdir -p quickskin/stubs/net/minecraft/network/chat
+          mkdir -p quickskin/stubs/net/minecraftforge/api/distmarker
+          mkdir -p quickskin/stubs/net/minecraftforge/client/event
+          mkdir -p quickskin/stubs/net/minecraftforge/eventbus/api
+          mkdir -p quickskin/stubs/net/minecraftforge/fml
+          mkdir -p quickskin/stubs/net/minecraftforge/fml/common
+          cat > quickskin/stubs/net/minecraft/client/gui/screens/Screen.java <<'EOF'
+          package net.minecraft.client.gui.screens;
+          public class Screen { public int f_96543_; public int f_96544_; }
+          EOF
+          cat > quickskin/stubs/com/mainlhs/client/screen/MainMenuScreen.java <<'EOF'
+          package com.mainlhs.client.screen;
+          public class MainMenuScreen extends net.minecraft.client.gui.screens.Screen {}
+          EOF
+          cat > quickskin/stubs/net/minecraft/client/gui/screens/PauseScreen.java <<'EOF'
+          package net.minecraft.client.gui.screens;
+          public class PauseScreen extends Screen {}
+          EOF
+          cat > quickskin/stubs/net/minecraft/client/Minecraft.java <<'EOF'
+          package net.minecraft.client;
+          import net.minecraft.client.gui.screens.Screen;
+          public class Minecraft { public static Minecraft getInstance(){return null;} public void setScreen(Screen s){} }
+          EOF
+          cat > quickskin/stubs/net/minecraft/client/gui/components/Button.java <<'EOF'
+          package net.minecraft.client.gui.components;
+          import net.minecraft.network.chat.Component;
+          import java.util.function.Consumer;
+          public class Button {
+            public static Builder builder(Component c, Consumer<Button> a){return new Builder();}
+            public static class Builder {
+              public Builder bounds(int x,int y,int w,int h){return this;}
+              public Button build(){return new Button();}
+            }
+          }
+          EOF
+          cat > quickskin/stubs/net/minecraft/network/chat/Component.java <<'EOF'
+          package net.minecraft.network.chat;
+          public class Component { public static Component m_237115_(String s){return new Component();} }
+          EOF
+          cat > quickskin/stubs/net/minecraftforge/api/distmarker/Dist.java <<'EOF'
+          package net.minecraftforge.api.distmarker;
+          public enum Dist { CLIENT, DEDICATED_SERVER }
+          EOF
+          cat > quickskin/stubs/net/minecraftforge/eventbus/api/SubscribeEvent.java <<'EOF'
+          package net.minecraftforge.eventbus.api;
+          import java.lang.annotation.*;
+          @Retention(RetentionPolicy.RUNTIME) @Target(ElementType.METHOD)
+          public @interface SubscribeEvent {}
+          EOF
+          cat > quickskin/stubs/net/minecraftforge/fml/common/Mod.java <<'EOF'
+          package net.minecraftforge.fml.common;
+          import java.lang.annotation.*;
+          import net.minecraftforge.api.distmarker.Dist;
+          public @interface Mod {
+            @Retention(RetentionPolicy.RUNTIME) @Target(ElementType.TYPE)
+            public @interface EventBusSubscriber {
+              String modid();
+              Bus bus();
+              Dist[] value() default {};
+              enum Bus { FORGE, MOD }
+            }
+          }
+          EOF
+          cat > quickskin/stubs/net/minecraftforge/fml/ModList.java <<'EOF'
+          package net.minecraftforge.fml;
+          public class ModList { public static ModList get(){return null;} public boolean isLoaded(String id){return false;} }
+          EOF
+          cat > quickskin/stubs/net/minecraftforge/client/event/ScreenEvent.java <<'EOF'
+          package net.minecraftforge.client.event;
+          import net.minecraft.client.gui.screens.Screen;
+          import net.minecraft.client.gui.components.Button;
+          public class ScreenEvent {
+            public static class Init {
+              public static class Post {
+                public Screen getScreen(){return null;}
+                public void addListener(Button b){}
+              }
+            }
+          }
+          EOF
+
+      - name: Compile integration class
+        run: |
+          mkdir -p quickskin/out
+          javac --release 17 -encoding UTF-8 -d quickskin/out \
+            $(find quickskin/stubs -name '*.java') \
+            quickskin/src/QuickSkinMenuIntegration.java
+
+      - name: Patch combined LHSMENU JAR
+        run: |
+          test -f LHSMENU.jar
+          cp LHSMENU.jar LHSMENU-QuickSkin.jar
+          jar uf LHSMENU-QuickSkin.jar -C quickskin/out net/lhs/lobby/QuickSkinMenuIntegration.class
+          jar tf LHSMENU-QuickSkin.jar | grep -q 'net/lhs/lobby/QuickSkinMenuIntegration.class'
+
+      - name: Upload downloadable JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: LHSMENU-QuickSkin
+          path: LHSMENU-QuickSkin.jar
+          if-no-files-found: error
+          retention-days: 30
