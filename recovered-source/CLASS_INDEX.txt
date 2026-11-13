@@ -34,3 +34,13 @@ recovered-source/java/com/mainlhs/server/ModItems.java
 recovered-source/java/com/mainlhs/server/ScaleEvents.java
 recovered-source/java/com/mainlhs/server/command/GenericScaleCommand.java
 recovered-source/java/com/mainlhs/server/command/RealisticCommand.java
+recovered-source/java/net/lhs/lobby/LHSLobbyClient.java
+recovered-source/java/net/lhs/lobby/LHSLobbyMod.java
+recovered-source/java/net/lhs/lobby/LobbyScreen.java
+recovered-source/java/net/lhs/lobby/LobbyTabList.java
+recovered-source/java/ru/lhs/auth/client/AuthApi.java
+recovered-source/java/ru/lhs/auth/client/AuthConfig.java
+recovered-source/java/ru/lhs/auth/client/AuthScreen.java
+recovered-source/java/ru/lhs/auth/client/AuthStore.java
+recovered-source/java/ru/lhs/auth/client/LHSAuthClient.java
+recovered-source/java/ru/lhs/auth/client/LHSAuthMod.java

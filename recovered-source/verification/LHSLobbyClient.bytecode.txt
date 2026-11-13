@@ -1,0 +1,35 @@
+Compiled from "LHSLobbyClient.java"
+public final class net.lhs.lobby.LHSLobbyClient {
+  private static net.minecraft.client.KeyMapping openKey;
+
+  private net.lhs.lobby.LHSLobbyClient();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static void init();
+    Code:
+       0: invokestatic  #7                  // Method net/minecraftforge/fml/javafmlmod/FMLJavaModLoadingContext.get:()Lnet/minecraftforge/fml/javafmlmod/FMLJavaModLoadingContext;
+       3: invokevirtual #13                 // Method net/minecraftforge/fml/javafmlmod/FMLJavaModLoadingContext.getModEventBus:()Lnet/minecraftforge/eventbus/api/IEventBus;
+       6: invokedynamic #17,  0             // InvokeDynamic #0:accept:()Ljava/util/function/Consumer;
+      11: invokeinterface #21,  2           // InterfaceMethod net/minecraftforge/eventbus/api/IEventBus.addListener:(Ljava/util/function/Consumer;)V
+      16: getstatic     #27                 // Field net/minecraftforge/common/MinecraftForge.EVENT_BUS:Lnet/minecraftforge/eventbus/api/IEventBus;
+      19: ldc           #33                 // class net/lhs/lobby/LobbyTabList
+      21: invokeinterface #35,  2           // InterfaceMethod net/minecraftforge/eventbus/api/IEventBus.register:(Ljava/lang/Object;)V
+      26: return
+
+  private static void registerKeys(net.minecraftforge.client.event.RegisterKeyMappingsEvent);
+    Code:
+       0: new           #39                 // class net/minecraft/client/KeyMapping
+       3: dup
+       4: ldc           #41                 // String key.lhs_lobby.open
+       6: bipush        77
+       8: ldc           #43                 // String key.categories.lhs_lobby
+      10: invokespecial #45                 // Method net/minecraft/client/KeyMapping."<init>":(Ljava/lang/String;ILjava/lang/String;)V
+      13: putstatic     #48                 // Field openKey:Lnet/minecraft/client/KeyMapping;
+      16: aload_0
+      17: getstatic     #48                 // Field openKey:Lnet/minecraft/client/KeyMapping;
+      20: invokevirtual #54                 // Method net/minecraftforge/client/event/RegisterKeyMappingsEvent.register:(Lnet/minecraft/client/KeyMapping;)V
+      23: return
+}

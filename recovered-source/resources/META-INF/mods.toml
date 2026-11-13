@@ -4,10 +4,24 @@ license="MIT"
 
 [[mods]]
     modId="mainlhs"
-    version="1.3.3"
+    version="1.5.0"
     displayName="LAST HUMAN STRONGHOLD"
     description='''Last Human Stronghold - Custom sci-fi horror main menu'''
-    authors="Mollra, 1mN1kO"
+    authors="Taburet|OneBot"
+
+[[mods]]
+    modId="lhs_auth"
+    version="1.1.0"
+    displayName="LHS Auth"
+    description='''Animated in-game authentication UI for Last Human Stronghold with auto-login.'''
+    authors="LastHumanStronghold"
+
+[[mods]]
+    modId="lhs_lobby"
+    version="1.1.0"
+    displayName="LHS Lobby GUI"
+    description='''LHS lobby selector for LHS Fishing and ZombieVoln, styled like the LHS main menu. Custom LHS-styled Tab player list.'''
+    authors="LastHumanStronghold"
 
 [[dependencies.mainlhs]]
     modId="forge"
@@ -34,5 +48,54 @@ license="MIT"
     modId="littletiles"
     mandatory=false
     versionRange="[1.0,)"
+    ordering="AFTER"
+    side="CLIENT"
+
+[[dependencies.mainlhs]]
+    modId="quickskin"
+    mandatory=false
+    versionRange="[0,)"
+    ordering="AFTER"
+    side="CLIENT"
+
+[[dependencies.lhs_auth]]
+    modId="forge"
+    mandatory=true
+    versionRange="[47,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.lhs_auth]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.20.1,1.21)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.lhs_auth]]
+    modId="mainlhs"
+    mandatory=true
+    versionRange="[1.4.0,)"
+    ordering="AFTER"
+    side="CLIENT"
+
+[[dependencies.lhs_lobby]]
+    modId="forge"
+    mandatory=true
+    versionRange="[47,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.lhs_lobby]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.20.1,1.21)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.lhs_lobby]]
+    modId="mainlhs"
+    mandatory=true
+    versionRange="[1.4.0,)"
     ordering="AFTER"
     side="CLIENT"

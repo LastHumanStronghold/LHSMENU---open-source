@@ -1,0 +1,76 @@
+Compiled from "LHSLobbyClient.java"
+public final class net.lhs.lobby.LHSLobbyClient$ClientEvents {
+  public net.lhs.lobby.LHSLobbyClient$ClientEvents();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static void keyInput(net.minecraftforge.client.event.InputEvent$Key);
+    Code:
+       0: invokestatic  #7                  // Method net/minecraft/client/Minecraft.m_91087_:()Lnet/minecraft/client/Minecraft;
+       3: astore_1
+       4: aload_0
+       5: invokevirtual #13                 // Method net/minecraftforge/client/event/InputEvent$Key.getKey:()I
+       8: sipush        258
+      11: if_icmpne     32
+      14: aload_0
+      15: invokevirtual #21                 // Method net/minecraftforge/client/event/InputEvent$Key.getAction:()I
+      18: iconst_1
+      19: if_icmpne     32
+      22: aload_1
+      23: getfield      #24                 // Field net/minecraft/client/Minecraft.f_91080_:Lnet/minecraft/client/gui/screens/Screen;
+      26: ifnonnull     32
+      29: invokestatic  #28                 // Method net/lhs/lobby/LobbyTabList.toggleTab:()V
+      32: getstatic     #33                 // Field net/lhs/lobby/LHSLobbyClient.openKey:Lnet/minecraft/client/KeyMapping;
+      35: ifnull        72
+      38: getstatic     #33                 // Field net/lhs/lobby/LHSLobbyClient.openKey:Lnet/minecraft/client/KeyMapping;
+      41: invokevirtual #39                 // Method net/minecraft/client/KeyMapping.m_90859_:()Z
+      44: ifeq          72
+      47: invokestatic  #7                  // Method net/minecraft/client/Minecraft.m_91087_:()Lnet/minecraft/client/Minecraft;
+      50: getfield      #24                 // Field net/minecraft/client/Minecraft.f_91080_:Lnet/minecraft/client/gui/screens/Screen;
+      53: ifnonnull     72
+      56: invokestatic  #45                 // Method net/lhs/lobby/LobbyTabList.closeTab:()V
+      59: invokestatic  #7                  // Method net/minecraft/client/Minecraft.m_91087_:()Lnet/minecraft/client/Minecraft;
+      62: new           #48                 // class net/lhs/lobby/LobbyScreen
+      65: dup
+      66: invokespecial #50                 // Method net/lhs/lobby/LobbyScreen."<init>":()V
+      69: invokevirtual #51                 // Method net/minecraft/client/Minecraft.m_91152_:(Lnet/minecraft/client/gui/screens/Screen;)V
+      72: return
+
+  public static void receiveSystemChat(net.minecraftforge.client.event.ClientChatReceivedEvent$System);
+    Code:
+       0: aload_0
+       1: invokevirtual #55                 // Method net/minecraftforge/client/event/ClientChatReceivedEvent$System.getMessage:()Lnet/minecraft/network/chat/Component;
+       4: invokeinterface #61,  1           // InterfaceMethod net/minecraft/network/chat/Component.getString:()Ljava/lang/String;
+       9: astore_1
+      10: ldc           #67                 // String LHS_LOBBY_OPEN_4F91
+      12: aload_1
+      13: invokevirtual #69                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+      16: ifeq          38
+      19: aload_0
+      20: iconst_1
+      21: invokevirtual #75                 // Method net/minecraftforge/client/event/ClientChatReceivedEvent$System.setCanceled:(Z)V
+      24: invokestatic  #7                  // Method net/minecraft/client/Minecraft.m_91087_:()Lnet/minecraft/client/Minecraft;
+      27: astore_2
+      28: aload_2
+      29: aload_2
+      30: invokedynamic #79,  0             // InvokeDynamic #0:run:(Lnet/minecraft/client/Minecraft;)Ljava/lang/Runnable;
+      35: invokevirtual #83                 // Method net/minecraft/client/Minecraft.execute:(Ljava/lang/Runnable;)V
+      38: return
+
+  private static void lambda$receiveSystemChat$0(net.minecraft.client.Minecraft);
+    Code:
+       0: aload_0
+       1: getfield      #87                 // Field net/minecraft/client/Minecraft.f_91074_:Lnet/minecraft/client/player/LocalPlayer;
+       4: ifnull        25
+       7: iconst_1
+       8: invokestatic  #91                 // Method net/lhs/lobby/LobbyTabList.setLobbyActive:(Z)V
+      11: invokestatic  #45                 // Method net/lhs/lobby/LobbyTabList.closeTab:()V
+      14: aload_0
+      15: new           #48                 // class net/lhs/lobby/LobbyScreen
+      18: dup
+      19: invokespecial #50                 // Method net/lhs/lobby/LobbyScreen."<init>":()V
+      22: invokevirtual #51                 // Method net/minecraft/client/Minecraft.m_91152_:(Lnet/minecraft/client/gui/screens/Screen;)V
+      25: return
+}
