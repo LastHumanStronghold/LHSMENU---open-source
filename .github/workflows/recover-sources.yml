@@ -46,30 +46,46 @@ jobs:
             --outputdir recovered-source/java \
             --silent true
 
-      - name: Decompile every Lobby and Auth top-level class
+      - name: Inspect embedded modules and decompile Lobby/Auth classes
         shell: bash
         run: |
           set -euo pipefail
 
-          # The first all-in-one CFR pass does not emit these two packages
-          # consistently. Process every top-level class separately.
+          echo "Binary SHA-256:"
+          sha256sum LHSMENU.jar
+          echo "Lobby/Auth class entries in LHSMENU.jar:"
+          jar tf LHSMENU.jar | grep -E '^(net/lhs/lobby|ru/lhs/auth/client)/.*\.class$' || true
+
+          # Use shell globs so every top-level class is processed deterministically.
           for package in net/lhs/lobby ru/lhs/auth/client; do
             package_dir="/tmp/lhs-jar/$package"
-            test -d "$package_dir"
-            mapfile -d '' classes < <(find "$package_dir" -maxdepth 1 -type f -name '*.class' ! -name '*$*' -print0 | sort -z)
-            test "${#classes[@]}" -gt 0
+            echo "Inspecting package: $package_dir"
+            if [[ ! -d "$package_dir" ]]; then
+              echo "::error::Package directory missing: $package_dir"
+              find /tmp/lhs-jar -maxdepth 5 -type d | sort | tail -80
+              exit 1
+            fi
 
-            for class_file in "${classes[@]}"; do
+            shopt -s nullglob
+            found=0
+            for class_file in "$package_dir"/*.class; do
+              [[ "$class_file" == *'$'* ]] && continue
+              found=$((found + 1))
               echo "Decompiling $class_file"
               java -jar /tmp/cfr.jar "$class_file" \
                 --outputdir recovered-source/java \
                 --silent true
             done
+            if [[ "$found" -eq 0 ]]; then
+              echo "::error::No top-level class files found in $package_dir"
+              ls -la "$package_dir"
+              exit 1
+            fi
           done
 
           echo "Generated package files:"
           find recovered-source/java/net/lhs/lobby recovered-source/java/ru/lhs/auth/client \
-            -maxdepth 1 -type f -name '*.java' -print | sort
+            -maxdepth 1 -type f -name '*.java' -print | sort || true
 
           # Required client GUI and keybinding sources.
           test -s recovered-source/java/net/lhs/lobby/LHSLobbyClient.java
