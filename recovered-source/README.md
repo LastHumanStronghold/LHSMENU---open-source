@@ -1,30 +1,34 @@
 # LHSMENU recovered source
 
-Reconstructed from the distributed LHSMENU.jar using CFR 0.152.
-Includes Java sources for all three embedded Forge mods and all
-non-class resources from the original JAR.
+This archive combines:
+- Main LHS Java sources decompiled from the repository-root LHSMENU.jar
+- LHS Lobby and LHS Auth classes extracted from the current LHSMENU build
+- Lobby Russian/English translations and the matching three-mod mods.toml
 
-## Modules
+## Included modules
 - mainlhs — 1.5.0
 - lhs_auth — 1.1.0
 - lhs_lobby — 1.1.0
 
-## Important restored packages
+## Important packages
 - `com/mainlhs/` — main LHS menu and shared systems
-- `ru/lhs/auth/client/` — in-game authentication interface
-- `net/lhs/lobby/` — lobby GUI, Tab list and M keybinding
+- `net/lhs/lobby/` — Lobby GUI, Tab list and M keybinding
+- `ru/lhs/auth/client/` — in-game authentication interface and API
 
-The Lobby/Auth packages are decompiled class-by-class because CFR's
-whole-JAR pass omitted them. CI checks that their expected source files
-exist. The `verification/` folder also records the M key binding
-directly from the original compiled bytecode.
+## M key
+The recovered `LHSLobbyClient.java` registers
+`key.lhs_lobby.open` on GLFW key code 77 (M). Its client input
+handler opens `LobbyScreen`. The `verification/` directory contains
+javap bytecode reports and a short verification note.
 
+## Recovery limits
 These are decompiled sources, not the original developer-authored
 project. Comments and original local variable names cannot be recovered
-from bytecode. Some Forge/Minecraft references may retain production
-obfuscated names, so a clean Gradle rebuild is not guaranteed without
-matching mappings and dependencies.
+from bytecode. Some Minecraft/Forge symbols retain production names,
+so a clean Gradle rebuild is not guaranteed without matching mappings
+and dependencies.
 
-The repository-root LHSMENU.jar is an older main-module binary. The additional
-Lobby/Auth class files and lobby translations are supplied under
-recovery-input/ and SHA-256 verified during each recovery run.
+The repository-root LHSMENU.jar is an older main-module binary.
+Lobby/Auth classes and translations are supplied by the checked
+supplement in `recovery-input/`. CI verifies the supplement SHA-256,
+the required Java files, and the M-key-to-LobbyScreen bytecode path.
