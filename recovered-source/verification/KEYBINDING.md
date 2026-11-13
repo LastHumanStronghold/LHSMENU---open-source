@@ -1,6 +1,7 @@
 # LHS Lobby keybinding verification
 
-Verified against the original LHSMENU.jar with javap:
+Verified with javap against the Lobby/Auth class files extracted
+from the user's current LHSMENU build:
 
 - Key translation key: `key.lhs_lobby.open`
 - GLFW key code: `77` (M)
@@ -8,5 +9,5 @@ Verified against the original LHSMENU.jar with javap:
 - Input handler: `net.lhs.lobby.LHSLobbyClient$ClientEvents.keyInput`
 - GUI opened: `net.lhs.lobby.LobbyScreen`
 
-The two adjacent bytecode reports are generated directly from the
-distributed JAR. This check does not depend on CFR's output.
+The adjacent bytecode reports are generated from the uploaded
+compiled class files. This check does not depend on CFR's output.
