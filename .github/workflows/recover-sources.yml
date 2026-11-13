@@ -40,6 +40,38 @@ jobs:
             -exec sh -c 'for f do dest="recovered-source/resources/${f#/tmp/lhs-jar/}"; mkdir -p "$(dirname "$dest")"; cp "$f" "$dest"; done' sh {} +
           cp /tmp/lhs-jar/META-INF/mods.toml recovered-source/mods.toml
 
+      - name: Verify and overlay current Lobby/Auth binary supplement
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # Reassemble the current Lobby/Auth classes uploaded from the user's JAR.
+          cat recovery-input/supplement-part-*.b64 > /tmp/lobby-auth-supplement.b64
+          echo "Supplement base64 bytes: $(wc -c < /tmp/lobby-auth-supplement.b64)"
+          echo "50113e227f0f291293b4783ce50e23ceb5101f1a7451bd32e9a943346d501605  /tmp/lobby-auth-supplement.b64" | sha256sum -c -
+          base64 -d /tmp/lobby-auth-supplement.b64 > /tmp/lobby-auth-supplement.zip
+          echo "a169a536d24fd3b2b96bc41223f45d30e714d309ebb078160cbfb0afb1b2fa3f  /tmp/lobby-auth-supplement.zip" | sha256sum -c -
+          unzip -tq /tmp/lobby-auth-supplement.zip
+          rm -rf /tmp/lobby-auth-supplement
+          mkdir -p /tmp/lobby-auth-supplement
+          unzip -oq /tmp/lobby-auth-supplement.zip -d /tmp/lobby-auth-supplement
+
+          # The archive uses short prefixes; bytecode contains the full packages.
+          mkdir -p /tmp/lhs-jar/net/lhs /tmp/lhs-jar/ru/lhs/auth /tmp/lhs-jar/assets
+          cp -a /tmp/lobby-auth-supplement/supplemental/lhs/lobby /tmp/lhs-jar/net/lhs/
+          cp -a /tmp/lobby-auth-supplement/supplemental/lhs/auth/client /tmp/lhs-jar/ru/lhs/auth/
+          cp -a /tmp/lobby-auth-supplement/supplemental/assets/lhs_lobby /tmp/lhs-jar/assets/
+          cp /tmp/lobby-auth-supplement/supplemental/mods.toml /tmp/lhs-jar/META-INF/mods.toml
+
+          # Include recovered translations and the correct three-mod metadata.
+          mkdir -p recovered-source/resources/META-INF recovered-source/resources/assets
+          cp /tmp/lhs-jar/META-INF/mods.toml recovered-source/mods.toml
+          cp /tmp/lhs-jar/META-INF/mods.toml recovered-source/resources/META-INF/mods.toml
+          cp -a /tmp/lhs-jar/assets/lhs_lobby recovered-source/resources/assets/
+
+          echo "Overlay class inventory:"
+          find /tmp/lhs-jar/net/lhs/lobby /tmp/lhs-jar/ru/lhs/auth/client -type f -name '*.class' | sort
+
       - name: Decompile main LHS module
         run: |
           java -jar /tmp/cfr.jar LHSMENU.jar \
@@ -97,9 +129,9 @@ jobs:
       - name: Verify M key and GUI dispatch from original bytecode
         run: |
           mkdir -p recovered-source/verification
-          javap -classpath LHSMENU.jar -c -p net.lhs.lobby.LHSLobbyClient \
+          javap -classpath /tmp/lhs-jar -c -p net.lhs.lobby.LHSLobbyClient \
             > recovered-source/verification/LHSLobbyClient.bytecode.txt
-          javap -classpath LHSMENU.jar -c -p 'net.lhs.lobby.LHSLobbyClient$ClientEvents' \
+          javap -classpath /tmp/lhs-jar -c -p 'net.lhs.lobby.LHSLobbyClient$ClientEvents' \
             > recovered-source/verification/LHSLobbyClient-ClientEvents.bytecode.txt
 
           grep -Fq 'key.lhs_lobby.open' recovered-source/verification/LHSLobbyClient.bytecode.txt
@@ -155,7 +187,9 @@ jobs:
           obfuscated names, so a clean Gradle rebuild is not guaranteed without
           matching mappings and dependencies.
 
-          Original binary is kept at the repository root as `LHSMENU.jar`.
+          The repository-root LHSMENU.jar is an older main-module binary. The additional
+          Lobby/Auth class files and lobby translations are supplied under
+          recovery-input/ and SHA-256 verified during each recovery run.
           EOF
 
           sha256sum LHSMENU.jar > recovered-source/ORIGINAL_JAR_SHA256.txt
