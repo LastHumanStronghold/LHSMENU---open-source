@@ -1,0 +1,81 @@
+name: Recover LHSMENU Java sources
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "LHSMENU.jar"
+      - ".github/workflows/recover-sources.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  decompile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Download CFR decompiler
+        run: |
+          curl -fL --retry 3 --retry-delay 2 \
+            https://www.benf.org/other/cfr/cfr-0.152.jar \
+            -o /tmp/cfr.jar
+          test -s /tmp/cfr.jar
+
+      - name: Decompile all classes
+        run: |
+          test -f LHSMENU.jar
+          mkdir -p recovered-source/java recovered-source/resources
+          java -jar /tmp/cfr.jar LHSMENU.jar \
+            --outputdir recovered-source/java \
+            --silent true
+          unzip -oq LHSMENU.jar -d /tmp/lhs-jar
+          find /tmp/lhs-jar -type f ! -name '*.class' ! -path '*/META-INF/MANIFEST.MF' \
+            -exec sh -c 'for f do dest="recovered-source/resources/${f#/tmp/lhs-jar/}"; mkdir -p "$(dirname "$dest")"; cp "$f" "$dest"; done' sh {} +
+          cp /tmp/lhs-jar/META-INF/mods.toml recovered-source/mods.toml
+          find recovered-source/java -name '*.java' | sort > recovered-source/CLASS_INDEX.txt
+          printf 'Recovered Java files: '
+          wc -l < recovered-source/CLASS_INDEX.txt
+          test -s recovered-source/CLASS_INDEX.txt
+
+      - name: Add recovery notes
+        run: |
+          cat > recovered-source/README.md <<'EOF'
+          # LHSMENU recovered source
+
+          This directory contains Java source reconstructed from the distributed
+          LHSMENU.jar using the CFR Java decompiler, plus the non-class resources
+          extracted from that same JAR.
+
+          Modules present in the binary:
+          - mainlhs — 1.5.0
+          - lhs_auth — 1.1.0
+          - lhs_lobby — 1.1.0
+
+          These are decompiled sources, not the original developer-authored source.
+          Names and comments may be missing, and some Minecraft/Forge calls may
+          retain remapped names. A matching Forge 1.20.1 development environment
+          and dependency setup may be needed before the sources can be rebuilt.
+
+          Original binary: repository root, LHSMENU.jar.
+          EOF
+
+      - name: Commit recovered sources
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add recovered-source
+          if git diff --cached --quiet; then
+            echo "No recovered source changes."
+            exit 0
+          fi
+          git commit -m "Add decompiled LHSMENU source and resources"
+          git push
