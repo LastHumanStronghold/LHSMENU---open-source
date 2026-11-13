@@ -30,20 +30,53 @@ jobs:
             -o /tmp/cfr.jar
           test -s /tmp/cfr.jar
 
-      - name: Decompile all classes
+      - name: Extract binary and resources
         run: |
           test -f LHSMENU.jar
           mkdir -p recovered-source/java recovered-source/resources
-          java -jar /tmp/cfr.jar LHSMENU.jar \
-            --outputdir recovered-source/java \
-            --silent true
           unzip -oq LHSMENU.jar -d /tmp/lhs-jar
           find /tmp/lhs-jar -type f ! -name '*.class' ! -path '*/META-INF/MANIFEST.MF' \
             -exec sh -c 'for f do dest="recovered-source/resources/${f#/tmp/lhs-jar/}"; mkdir -p "$(dirname "$dest")"; cp "$f" "$dest"; done' sh {} +
           cp /tmp/lhs-jar/META-INF/mods.toml recovered-source/mods.toml
+
+      - name: Decompile complete JAR
+        run: |
+          java -jar /tmp/cfr.jar LHSMENU.jar \
+            --outputdir recovered-source/java \
+            --silent true
+
+      - name: Recover client lobby and authentication packages explicitly
+        run: |
+          # CFR's whole-JAR pass can skip packages in some multi-module JARs.
+          # Decompile their top-level classes directly from the extracted binary.
+          for package in net/lhs ru/lhs; do
+            if [ -d "/tmp/lhs-jar/$package" ]; then
+              find "/tmp/lhs-jar/$package" -type f -name '*.class' ! -name '*$*' -print0 |
+                while IFS= read -r -d '' class_file; do
+                  java -jar /tmp/cfr.jar "$class_file" \
+                    --outputdir recovered-source/java \
+                    --silent true
+                done
+            fi
+          done
+
+          # These checks prevent publishing another archive that silently omits
+          # the M-key lobby screen or the standalone authentication GUI.
+          test -s recovered-source/java/net/lhs/lobby/LHSLobbyClient.java
+          test -s recovered-source/java/net/lhs/lobby/LobbyScreen.java
+          test -s recovered-source/java/ru/lhs/auth/client/LHSAuthClient.java
+          test -s recovered-source/java/ru/lhs/auth/client/AuthScreen.java
+
+          grep -R -q 'key.lhs_lobby.open' recovered-source/java/net/lhs/lobby
+          grep -R -q 'LobbyScreen' recovered-source/java/net/lhs/lobby
+          grep -R -q 'SubscribeEvent' recovered-source/java/net/lhs/lobby
+
+      - name: Build complete source index
+        run: |
           find recovered-source/java -name '*.java' | sort > recovered-source/CLASS_INDEX.txt
           printf 'Recovered Java files: '
           wc -l < recovered-source/CLASS_INDEX.txt
+          grep -E 'net/lhs/lobby/(LHSLobbyClient|LobbyScreen)\.java|ru/lhs/auth/client/(LHSAuthClient|AuthScreen)\.java' recovered-source/CLASS_INDEX.txt
           test -s recovered-source/CLASS_INDEX.txt
 
       - name: Add recovery notes
@@ -51,25 +84,36 @@ jobs:
           cat > recovered-source/README.md <<'EOF'
           # LHSMENU recovered source
 
-          This directory contains Java source reconstructed from the distributed
-          LHSMENU.jar using the CFR Java decompiler, plus the non-class resources
-          extracted from that same JAR.
+          This directory contains Java source reconstructed from LHSMENU.jar with
+          CFR, plus the non-class resources extracted from that same JAR.
 
           Modules present in the binary:
           - mainlhs — 1.5.0
           - lhs_auth — 1.1.0
           - lhs_lobby — 1.1.0
 
+          The lobby package is explicitly decompiled and verified in CI. In
+          particular, LHSLobbyClient registers the M key binding
+          (key.lhs_lobby.open, GLFW key code 77), and ClientEvents opens
+          LobbyScreen when that binding is pressed while no other screen is open.
+          The lobby client event subscriber and its handlers are included.
+
           These are decompiled sources, not the original developer-authored source.
-          Names and comments may be missing, and some Minecraft/Forge calls may
-          retain remapped names. A matching Forge 1.20.1 development environment
-          and dependency setup may be needed before the sources can be rebuilt.
+          Names and comments may differ, and some Minecraft/Forge calls may retain
+          remapped names. A matching Forge 1.20.1 development environment and
+          dependency setup may be needed before the sources can be rebuilt.
 
           Original binary: repository root, LHSMENU.jar.
           EOF
 
       - name: Package source archive
         run: zip -qr LHSMENU-source.zip recovered-source
+
+      - name: Verify archive contents
+        run: |
+          unzip -l LHSMENU-source.zip | grep -E 'LHSLobbyClient.java|LobbyScreen.java|LHSAuthClient.java|AuthScreen.java|CLASS_INDEX.txt'
+          unzip -p LHSMENU-source.zip recovered-source/java/net/lhs/lobby/LHSLobbyClient.java | grep -q 'key.lhs_lobby.open'
+          unzip -p LHSMENU-source.zip recovered-source/java/net/lhs/lobby/LHSLobbyClient\$ClientEvents.java | grep -q 'LobbyScreen'
 
       - name: Commit recovered sources
         run: |
@@ -80,5 +124,5 @@ jobs:
             echo "No recovered source changes."
             exit 0
           fi
-          git commit -m "Add decompiled LHSMENU source archive and resources"
+          git commit -m "Recover missing LHS Lobby and Auth Java sources"
           git push
