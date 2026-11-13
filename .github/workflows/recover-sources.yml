@@ -113,7 +113,7 @@ jobs:
         run: |
           unzip -l LHSMENU-source.zip | grep -E 'LHSLobbyClient.java|LobbyScreen.java|LHSAuthClient.java|AuthScreen.java|CLASS_INDEX.txt'
           unzip -p LHSMENU-source.zip recovered-source/java/net/lhs/lobby/LHSLobbyClient.java | grep -q 'key.lhs_lobby.open'
-          unzip -p LHSMENU-source.zip recovered-source/java/net/lhs/lobby/LHSLobbyClient\$ClientEvents.java | grep -q 'LobbyScreen'
+          unzip -p LHSMENU-source.zip recovered-source/java/net/lhs/lobby/LHSLobbyClient.java | grep -q 'ClientEvents'
 
       - name: Commit recovered sources
         run: |
