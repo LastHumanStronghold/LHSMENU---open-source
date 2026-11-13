@@ -68,14 +68,17 @@ jobs:
           Original binary: repository root, LHSMENU.jar.
           EOF
 
+      - name: Package source archive
+        run: zip -qr LHSMENU-source.zip recovered-source
+
       - name: Commit recovered sources
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add recovered-source
+          git add recovered-source LHSMENU-source.zip
           if git diff --cached --quiet; then
             echo "No recovered source changes."
             exit 0
           fi
-          git commit -m "Add decompiled LHSMENU source and resources"
+          git commit -m "Add decompiled LHSMENU source archive and resources"
           git push
