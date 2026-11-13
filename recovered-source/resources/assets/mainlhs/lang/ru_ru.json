@@ -1,0 +1,10 @@
+{
+    "mainlhs.menu.play": "ИГРАТЬ",
+    "mainlhs.menu.settings": "НАСТРОЙКИ",
+    "mainlhs.menu.exit": "ВЫХОД",
+    "mainlhs.menu.join": "ПРИСОЕДИНИТЬСЯ",
+    "mainlhs.menu.singleplayer": "ОДИНОЧНЫЙ",
+    "mainlhs.menu.back": "НАЗАД",
+    "mainlhs.subtitle": "последняя крепость человечества",
+    "commands.mainlhs.genericscale.success": "Размер %s установлен на %s (высота: %s блоков)"
+}

@@ -1,0 +1,38 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="MIT"
+
+[[mods]]
+    modId="mainlhs"
+    version="1.3.3"
+    displayName="LAST HUMAN STRONGHOLD"
+    description='''Last Human Stronghold - Custom sci-fi horror main menu'''
+    authors="Mollra, 1mN1kO"
+
+[[dependencies.mainlhs]]
+    modId="forge"
+    mandatory=true
+    versionRange="[47,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.mainlhs]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.20.1,1.21)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.mainlhs]]
+    modId="creativecore"
+    mandatory=false
+    versionRange="[2.0,)"
+    ordering="AFTER"
+    side="CLIENT"
+
+[[dependencies.mainlhs]]
+    modId="littletiles"
+    mandatory=false
+    versionRange="[1.0,)"
+    ordering="AFTER"
+    side="CLIENT"

@@ -1,0 +1,10 @@
+{
+    "mainlhs.menu.play": "PLAY",
+    "mainlhs.menu.settings": "SETTINGS",
+    "mainlhs.menu.exit": "EXIT",
+    "mainlhs.menu.join": "JOIN",
+    "mainlhs.menu.singleplayer": "SINGLEPLAYER",
+    "mainlhs.menu.back": "BACK",
+    "mainlhs.subtitle": "last human stronghold",
+    "commands.mainlhs.genericscale.success": "Set %s scale to %s (height: %s blocks)"
+}

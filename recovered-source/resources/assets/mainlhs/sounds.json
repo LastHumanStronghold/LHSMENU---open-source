@@ -1,0 +1,23 @@
+{
+  "ui.btn_hover": {
+    "category": "master",
+    "sounds": [
+      "mainlhs:ui/btn_hover"
+    ]
+  },
+  "ui.btn_click": {
+    "category": "master",
+    "sounds": [
+      "mainlhs:ui/btn_click"
+    ]
+  },
+  "music.menu_bgm": {
+    "category": "music",
+    "sounds": [
+      {
+        "name": "mainlhs:music/menu_bgm",
+        "stream": true
+      }
+    ]
+  }
+}
