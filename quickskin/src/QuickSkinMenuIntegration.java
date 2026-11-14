@@ -1,7 +1,6 @@
 package net.lhs.lobby;
 
 import com.mainlhs.client.screen.MainMenuScreen;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.PauseScreen;
@@ -91,9 +90,28 @@ public final class QuickSkinMenuIntegration {
             Class<?> screenClass = Class.forName(QUICK_SKIN_SCREEN);
             Constructor<?> constructor = screenClass.getConstructor(Screen.class);
             Object skinScreen = constructor.newInstance(parent);
-            if (skinScreen instanceof Screen target) {
-                Minecraft.getInstance().setScreen(target);
-            }
+            if (!(skinScreen instanceof Screen target)) return;
+
+            // Resolve Minecraft methods reflectively because this class is injected
+            // after the base mod has already been remapped to Forge runtime names.
+            Class<?> minecraftClass = Class.forName("net.minecraft.client.Minecraft");
+            Method instanceFactory = Arrays.stream(minecraftClass.getDeclaredMethods())
+                    .filter(method -> Modifier.isStatic(method.getModifiers()))
+                    .filter(method -> method.getParameterCount() == 0)
+                    .filter(method -> minecraftClass.isAssignableFrom(method.getReturnType()))
+                    .findFirst()
+                    .orElseThrow(() -> new NoSuchMethodException("Minecraft instance factory"));
+            instanceFactory.setAccessible(true);
+            Object minecraft = instanceFactory.invoke(null);
+
+            Method setScreen = Arrays.stream(minecraftClass.getDeclaredMethods())
+                    .filter(method -> method.getParameterCount() == 1)
+                    .filter(method -> method.getParameterTypes()[0].isAssignableFrom(Screen.class))
+                    .filter(method -> method.getReturnType() == void.class)
+                    .findFirst()
+                    .orElseThrow(() -> new NoSuchMethodException("Minecraft setScreen"));
+            setScreen.setAccessible(true);
+            setScreen.invoke(minecraft, target);
         } catch (ReflectiveOperationException | LinkageError exception) {
             System.err.println("[LHS] Unable to open Quick Skin screen: " + exception.getMessage());
         }
