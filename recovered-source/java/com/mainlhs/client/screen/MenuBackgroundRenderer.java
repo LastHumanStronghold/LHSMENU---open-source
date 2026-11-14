@@ -62,9 +62,9 @@ public final class MenuBackgroundRenderer {
             float vertFade = 1.0f - vertDist;
             vertFade = vertFade * vertFade * (3.0f - 2.0f * vertFade);
             float intensity = vertFade * (0.28f + pulse * 0.08f) * fade;
-            int red = (int)(intensity * 140.0f);
-            int green = (int)(intensity * 12.0f);
-            int blue = (int)(intensity * 18.0f);
+            int red = (int)(intensity * 255.0f);
+            int green = (int)(intensity * 92.0f);
+            int blue = (int)(intensity * 12.0f);
             int alpha = (int)(intensity * 255.0f);
             red = Mth.m_14045_((int)red, (int)0, (int)255);
             green = Mth.m_14045_((int)green, (int)0, (int)255);
@@ -106,7 +106,7 @@ public final class MenuBackgroundRenderer {
             alpha = Mth.m_14045_((int)alpha, (int)0, (int)255);
             int size = depth > 0.8f ? 2 : 1;
             int colorType = i % 4;
-            int rgb = colorType == 0 ? 0xDD9944 : (colorType == 1 ? 13381176 : (colorType == 2 ? 11149352 : 0x882020));
+            int rgb = colorType == 0 ? 0xFF9A32 : (colorType == 1 ? 0xFF6A1A : (colorType == 2 ? 0xFFC05A : 0xD94A12));
             int color = alpha << 24 | rgb;
             gfx.m_280509_((int)x, (int)y, (int)x + size, (int)y + size, color);
             if (!(depth > 0.8f) || alpha <= 60) continue;
@@ -124,7 +124,7 @@ public final class MenuBackgroundRenderer {
         if (alpha <= 0) {
             return;
         }
-        int color = alpha << 24 | 0x661820;
+        int color = alpha << 24 | 0x66300D;
         int margin = 12;
         int len = 16;
         gfx.m_280509_(margin, margin, margin + len, margin + 1, color);
