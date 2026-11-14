@@ -143,23 +143,23 @@ extends Screen {
         int glowAlpha = (int)(alpha * (75.0f + this.titleGlow * 105.0f));
         String title = "LAST HUMAN STRONGHOLD";
         int titleWidth = font.m_92895_(title);
-        int shadowColor = Mth.m_14045_((int)glowAlpha, (int)0, (int)255) << 24 | 0xFF8818;
+        int shadowColor = Mth.m_14045_((int)glowAlpha, (int)0, (int)255) << 24 | 0xFF2A35;
         gfx.m_280056_(font, title, cx - titleWidth / 2, titleY + 1, shadowColor, false);
         int titleColor = Mth.m_14045_((int)baseAlpha, (int)0, (int)255) << 24 | 0xFFF2F4;
         gfx.m_280056_(font, title, cx - titleWidth / 2, titleY, titleColor, false);
         String sub = MainMenuScreen.text("\u041f\u041e\u0421\u041b\u0415\u0414\u041d\u0418\u0419 \u041e\u041f\u041b\u041e\u0422 \u0427\u0415\u041b\u041e\u0412\u0415\u0427\u0415\u0421\u0422\u0412\u0410", "THE LAST HUMAN STRONGHOLD");
         int subY = titleY + 14;
         int subAlpha = (int)(alpha * 165.0f);
-        int subColor = Mth.m_14045_((int)subAlpha, (int)0, (int)255) << 24 | 0xD98A42;
+        int subColor = Mth.m_14045_((int)subAlpha, (int)0, (int)255) << 24 | 0xD4757C;
         gfx.m_280137_(font, sub, cx, subY, subColor);
         int divY = subY + 16;
         int divHalfWidth = Math.min(140, this.f_96543_ / 4);
         int divAlpha = (int)(alpha * 80.0f);
-        int divColor = divAlpha << 24 | 0x99501A;
+        int divColor = divAlpha << 24 | 0x882025;
         gfx.m_280509_(cx - divHalfWidth, divY, cx - 12, divY + 1, divColor);
         gfx.m_280509_(cx + 12, divY, cx + divHalfWidth, divY + 1, divColor);
         int dotAlpha = (int)(alpha * (180.0f + this.titleGlow * 75.0f));
-        int dotColor = Mth.m_14045_((int)dotAlpha, (int)0, (int)255) << 24 | 0xFFB347;
+        int dotColor = Mth.m_14045_((int)dotAlpha, (int)0, (int)255) << 24 | 0xFF4D5A;
         gfx.m_280509_(cx - 2, divY - 1, cx + 2, divY + 2, dotColor);
     }
 

@@ -38,6 +38,7 @@ recovered-source/java/net/lhs/lobby/LHSLobbyClient.java
 recovered-source/java/net/lhs/lobby/LHSLobbyMod.java
 recovered-source/java/net/lhs/lobby/LobbyScreen.java
 recovered-source/java/net/lhs/lobby/LobbyTabList.java
+recovered-source/java/net/lhs/lobby/QuickSkinMenuIntegration.java
 recovered-source/java/ru/lhs/auth/client/AuthApi.java
 recovered-source/java/ru/lhs/auth/client/AuthConfig.java
 recovered-source/java/ru/lhs/auth/client/AuthScreen.java

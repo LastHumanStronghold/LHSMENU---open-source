@@ -33,7 +33,7 @@ public final class MenuBackgroundRenderer {
         float clampedFade = Mth.m_14036_((float)fade, (float)0.0f, (float)1.0f);
         float px = ((float)mouseX / (float)Math.max(1, width) - 0.5f) * 20.0f;
         float py = ((float)mouseY / (float)Math.max(1, height) - 0.5f) * 14.0f;
-        gfx.m_280509_(0, 0, width, height, 0xFF120A03);
+        gfx.m_280509_(0, 0, width, height, -16645887);
         MenuBackgroundRenderer.renderRadialGradient(gfx, width, height, time, clampedFade, px, py);
         MenuBackgroundRenderer.renderEmbers(gfx, width, height, time, clampedFade, px, py);
         MenuBackgroundRenderer.renderCornerAccents(gfx, width, height, clampedFade);
@@ -62,8 +62,8 @@ public final class MenuBackgroundRenderer {
             float vertFade = 1.0f - vertDist;
             vertFade = vertFade * vertFade * (3.0f - 2.0f * vertFade);
             float intensity = vertFade * (0.28f + pulse * 0.08f) * fade;
-            int red = (int)(intensity * 255.0f);
-            int green = (int)(intensity * 105.0f);
+            int red = (int)(intensity * 140.0f);
+            int green = (int)(intensity * 12.0f);
             int blue = (int)(intensity * 18.0f);
             int alpha = (int)(intensity * 255.0f);
             red = Mth.m_14045_((int)red, (int)0, (int)255);
@@ -106,7 +106,7 @@ public final class MenuBackgroundRenderer {
             alpha = Mth.m_14045_((int)alpha, (int)0, (int)255);
             int size = depth > 0.8f ? 2 : 1;
             int colorType = i % 4;
-            int rgb = colorType == 0 ? 0xFFB347 : (colorType == 1 ? 0xFF8818 : (colorType == 2 ? 0xFFD080 : 0xE65A00));
+            int rgb = colorType == 0 ? 0xDD9944 : (colorType == 1 ? 13381176 : (colorType == 2 ? 11149352 : 0x882020));
             int color = alpha << 24 | rgb;
             gfx.m_280509_((int)x, (int)y, (int)x + size, (int)y + size, color);
             if (!(depth > 0.8f) || alpha <= 60) continue;
@@ -124,7 +124,7 @@ public final class MenuBackgroundRenderer {
         if (alpha <= 0) {
             return;
         }
-        int color = alpha << 24 | 0xA64B00;
+        int color = alpha << 24 | 0x661820;
         int margin = 12;
         int len = 16;
         gfx.m_280509_(margin, margin, margin + len, margin + 1, color);

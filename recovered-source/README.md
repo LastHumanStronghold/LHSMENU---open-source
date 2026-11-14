@@ -14,6 +14,7 @@ This archive combines:
 - `com/mainlhs/` — main LHS menu and shared systems
 - `net/lhs/lobby/` — Lobby GUI, Tab list and M keybinding
 - `ru/lhs/auth/client/` — in-game authentication interface and API
+- `net/lhs/lobby/QuickSkinMenuIntegration.java` — optional Quick Skin button integration for the main and pause menus
 
 ## M key
 The recovered `LHSLobbyClient.java` registers
