@@ -233,5 +233,6 @@ jobs:
             echo "No recovered source changes."
             exit 0
           fi
-          git commit -m "Recover complete Lobby and Auth sources and verify M key"
+          git commit -m "Recover complete Lobby Auth and Quick Skin sources"
+          git pull --rebase origin main
           git push
