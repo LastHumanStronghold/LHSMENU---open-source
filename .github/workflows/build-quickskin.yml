@@ -57,15 +57,45 @@ jobs:
         run: |
           mkdir -p quickskin/out
           javac --release 17 -encoding UTF-8 -d quickskin/out $(find quickskin/stubs -name '*.java') quickskin/src/QuickSkinMenuIntegration.java
-      - name: Patch combined LHSMENU JAR
+      - name: Assemble current Lobby and Auth modules
+        shell: bash
         run: |
-          test -f LHSMENU.jar
-          cp LHSMENU.jar LHSMENU-QuickSkin.jar
-          jar uf LHSMENU-QuickSkin.jar -C quickskin/out net/lhs/lobby/QuickSkinMenuIntegration.class
-          jar tf LHSMENU-QuickSkin.jar | grep -q 'net/lhs/lobby/QuickSkinMenuIntegration.class'
+          set -euo pipefail
+          cat recovery-input/supplement-part-*.b64 > /tmp/lobby-auth-supplement.b64
+          echo "50113e227f0f291293b4783ce50e23ceb5101f1a7451bd32e9a943346d501605  /tmp/lobby-auth-supplement.b64" | sha256sum -c -
+          base64 -d /tmp/lobby-auth-supplement.b64 > /tmp/lobby-auth-supplement.zip
+          echo "a169a536d24fd3b2b96bc41223f45d30e714d309ebb078160cbfb0afb1b2fa3f  /tmp/lobby-auth-supplement.zip" | sha256sum -c -
+          unzip -tq /tmp/lobby-auth-supplement.zip
+          mkdir -p /tmp/lobby-auth-supplement /tmp/lhs-combined
+          unzip -oq /tmp/lobby-auth-supplement.zip -d /tmp/lobby-auth-supplement
+          unzip -oq LHSMENU.jar -d /tmp/lhs-combined
+          mkdir -p /tmp/lhs-combined/net/lhs /tmp/lhs-combined/ru/lhs/auth /tmp/lhs-combined/assets /tmp/lhs-combined/META-INF
+          cp -a /tmp/lobby-auth-supplement/supplemental/lhs/lobby /tmp/lhs-combined/net/lhs/
+          cp -a /tmp/lobby-auth-supplement/supplemental/lhs/auth/client /tmp/lhs-combined/ru/lhs/auth/
+          cp -a /tmp/lobby-auth-supplement/supplemental/assets/lhs_lobby /tmp/lhs-combined/assets/
+          cp /tmp/lobby-auth-supplement/supplemental/mods.toml /tmp/lhs-combined/META-INF/mods.toml
+
+          cp LHSMENU.jar LHSMENU-Combined-QuickSkin.jar
+          jar uf LHSMENU-Combined-QuickSkin.jar \
+            -C /tmp/lhs-combined net/lhs/lobby \
+            -C /tmp/lhs-combined ru/lhs/auth \
+            -C /tmp/lhs-combined assets/lhs_lobby \
+            -C /tmp/lhs-combined META-INF/mods.toml \
+            -C quickskin/out net/lhs/lobby/QuickSkinMenuIntegration.class
+
+          jar tf LHSMENU-Combined-QuickSkin.jar > /tmp/lhs-jar-index.txt
+          grep -Fxq 'net/lhs/lobby/LHSLobbyClient.class' /tmp/lhs-jar-index.txt
+          grep -Fxq 'net/lhs/lobby/LobbyScreen.class' /tmp/lhs-jar-index.txt
+          grep -Fxq 'ru/lhs/auth/client/LHSAuthClient.class' /tmp/lhs-jar-index.txt
+          grep -Fxq 'ru/lhs/auth/client/AuthScreen.class' /tmp/lhs-jar-index.txt
+          grep -Fxq 'net/lhs/lobby/QuickSkinMenuIntegration.class' /tmp/lhs-jar-index.txt
+          unzip -p LHSMENU-Combined-QuickSkin.jar META-INF/mods.toml | grep -Fq 'modId="lhs_auth"'
+          unzip -p LHSMENU-Combined-QuickSkin.jar META-INF/mods.toml | grep -Fq 'modId="lhs_lobby"'
+          unzip -p LHSMENU-Combined-QuickSkin.jar META-INF/mods.toml | grep -Fq 'modId="mainlhs"'
+
       - uses: actions/upload-artifact@v4
         with:
-          name: LHSMENU-QuickSkin
-          path: LHSMENU-QuickSkin.jar
+          name: LHSMENU-Combined-QuickSkin
+          path: LHSMENU-Combined-QuickSkin.jar
           if-no-files-found: error
           retention-days: 30
