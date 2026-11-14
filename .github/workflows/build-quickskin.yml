@@ -1,4 +1,5 @@
 name: Build LHSMENU with Quick Skin
+# Rebuilds the combined mainlhs + lhs_auth + lhs_lobby JAR with Quick Skin integration.
 
 on:
   workflow_dispatch:
