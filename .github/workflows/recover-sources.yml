@@ -6,6 +6,7 @@ on:
     paths:
       - "LHSMENU.jar"
       - ".github/workflows/recover-sources.yml"
+      - "quickskin/**"
 
 permissions:
   contents: write
@@ -126,6 +127,15 @@ jobs:
           test -s recovered-source/java/ru/lhs/auth/client/LHSAuthClient.java
           test -s recovered-source/java/ru/lhs/auth/client/AuthScreen.java
 
+      - name: Include Quick Skin integration source
+        run: |
+          set -euo pipefail
+          test -s quickskin/src/QuickSkinMenuIntegration.java
+          mkdir -p recovered-source/java/net/lhs/lobby
+          cp quickskin/src/QuickSkinMenuIntegration.java recovered-source/java/net/lhs/lobby/QuickSkinMenuIntegration.java
+          grep -Fq 'PlayerSkinMenuScreen' recovered-source/java/net/lhs/lobby/QuickSkinMenuIntegration.java
+          grep -Fq 'MainMenuScreen' recovered-source/java/net/lhs/lobby/QuickSkinMenuIntegration.java
+
       - name: Verify M key and GUI dispatch from original bytecode
         run: |
           mkdir -p recovered-source/verification
@@ -177,6 +187,7 @@ jobs:
           - `com/mainlhs/` — main LHS menu and shared systems
           - `net/lhs/lobby/` — Lobby GUI, Tab list and M keybinding
           - `ru/lhs/auth/client/` — in-game authentication interface and API
+- `net/lhs/lobby/QuickSkinMenuIntegration.java` — optional Quick Skin button integration for the main and pause menus
 
           ## M key
           The recovered `LHSLobbyClient.java` registers
@@ -210,6 +221,8 @@ jobs:
           grep -Fq 'recovered-source/java/ru/lhs/auth/client/LHSAuthClient.java' /tmp/archive-list.txt
           grep -Fq 'recovered-source/java/ru/lhs/auth/client/AuthScreen.java' /tmp/archive-list.txt
           unzip -p LHSMENU-source.zip recovered-source/verification/KEYBINDING.md | grep -Fq '77` (M)'
+          grep -Fq 'recovered-source/java/net/lhs/lobby/QuickSkinMenuIntegration.java' /tmp/archive-list.txt
+          unzip -p LHSMENU-source.zip recovered-source/java/net/lhs/lobby/QuickSkinMenuIntegration.java | grep -Fq 'PlayerSkinMenuScreen'
 
       - name: Commit recovered source archive
         run: |
